@@ -1,13 +1,12 @@
 import re
 
-# Add both NULL for DEST and COMP parts
-
 match_o = re.compile(
-    r'''^([A-Z]{0,3})(=[^;\n]*|0|[A-Z])(;[A-Z]{0,3}|;|)''', re.VERBOSE)
+    r'''([A-Z]{0,3})(=[^;\n]*|0|[A-Z])(;[A-Z]{0,3}|;|)''', re.VERBOSE)
 
 
 def separator(command):
     result = []
+
     groups = match_o.findall(command)
     for group in groups[0]:
         if group == '':
