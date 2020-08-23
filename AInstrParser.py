@@ -1,9 +1,11 @@
 from symbol_table import symbols
 
 
-class SParser:
-    def __init__(self, ainstr):
+class AParser:
+    def __init__(self, ainstr, var_pointer_incrementer):
         self.instr = ainstr
+        # Method from Parser Class
+        self.incrementer = var_pointer_incrementer
 
     def parse_instr(self):
         result = None
@@ -15,7 +17,12 @@ class SParser:
         return result
 
     def parse_symbols(self, instruction):
-        return symbols[instruction]
+        try:
+            return symbols[instruction]
+        except KeyError:
+            # Means custom variable -> Add to a table
+            symbols[instruction] = self.incrementer()
+            return symbols[instruction]
 
     def parse_int(self, instruction):
         convert_instr = int(instruction)

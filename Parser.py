@@ -3,7 +3,7 @@ import re
 from dec_to_bin import dec_to_bin
 from parse_c_code import separator
 from CodeM import Code
-from SymbolParser import SParser
+from AInstrParser import AParser
 
 
 class Parser:
@@ -12,6 +12,9 @@ class Parser:
         self.commands = []
         self.currentC = 0
         self.commandType = None
+
+        # Store custom variable RAM addresses here (start from 16)
+        self.var_pointer = 16
 
     def read_program(self):
         with open(self.filename) as file:
@@ -24,7 +27,9 @@ class Parser:
         for command in self.commands:
             if (command.startswith('@')):
                 self.commandType = 'A_COMMAND'
-                aInstValue = int(command.replace("@", ""))
+                aInstr = AParser(command.replace("@", ""),
+                                 self.increment_var_pointer)
+                aInstValue = aInstr.parse_instr()
                 aBinary = dec_to_bin(aInstValue)
                 self.write_to_file(aBinary, result_filename)
             else:
@@ -36,6 +41,11 @@ class Parser:
     def write_to_file(self, instr, result_filename):
         with open(result_filename, 'a') as file:
             file.write(instr + '\n')
+
+    def increment_var_pointer(self):
+        temp = self.var_pointer
+        self.var_pointer += 1
+        return temp
 
 
 parsed_asm = Parser('test.asm')
